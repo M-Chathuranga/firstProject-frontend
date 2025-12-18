@@ -1,92 +1,36 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { BiPlus, BiTrash } from "react-icons/bi";
+import { BiEdit, BiPlus, BiTrash } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
+import Loader from "../../components/loader";
 
-const sampleProducts = [
-    {
-        productId: "COSM001",
-        name: "Hydrating Face Cream",
-        altNames: ["Moisturizer", "Face Lotion"],
-        labelledPrice: 2999,
-        price: 2499,
-        images: ["/images/face-cream.jpg"],
-        description:
-            "A rich hydrating cream that provides all-day moisture and a healthy glow.",
-        stock: 120,
-        isAvailable: true,
-        category: "cosmatics",
-    },
-    {
-        productId: "COSM002",
-        name: "Matte Lipstick - Crimson Red",
-        altNames: ["Red Lipstick", "Matte Lip"],
-        labelledPrice: 1799,
-        price: 1499,
-        images: ["/images/lipstick-red.jpg"],
-        description: "Long-lasting matte lipstick in a bold crimson red shade.",
-        stock: 75,
-        isAvailable: true,
-        category: "cosmatics",
-    },
-    {
-        productId: "COSM003",
-        name: "Volumizing Mascara",
-        altNames: ["Lash Booster", "Black Mascara"],
-        labelledPrice: 2299,
-        price: 1999,
-        images: ["/images/mascara.jpg"],
-        description: "Enhance your lashes with our waterproof volumizing mascara.",
-        stock: 90,
-        isAvailable: true,
-        category: "cosmatics",
-    },
-    {
-        productId: "COSM004",
-        name: "Nude Eyeshadow Palette",
-        altNames: ["Eyeshadow", "Eye Palette"],
-        labelledPrice: 3999,
-        price: 3599,
-        images: ["/images/eyeshadow-nude.jpg"],
-        description:
-            "A 12-shade palette with blendable nude tones for any occasion.",
-        stock: 60,
-        isAvailable: true,
-        category: "cosmatics",
-    },
-    {
-        productId: "COSM005",
-        name: "Refreshing Facial Toner",
-        altNames: ["Toner", "Face Mist"],
-        labelledPrice: 1599,
-        price: 1399,
-        images: ["/images/facial-toner.jpg"],
-        description: "Alcohol-free toner to refresh and balance your skin's pH.",
-        stock: 100,
-        isAvailable: true,
-        category: "cosmatics",
-    },
-];
+
 
 export default function ProductsAdminPage() {
-    const [products, setProducts] = useState(sampleProducts)
-    const [a, setA] = useState(0);
-    useEffect(
-        () => {
-            axios.get(import.meta.env.VITE_BACKEND_URL + "/api/products").then(
-                (res) => {
-                    setProducts(res.data)
-                }
-            )
-        },
-        [a]
-    )
-    const navigate = useNavigate()
+    const [products, setProducts] = useState([])
+    const [isLoading, setisLoading] = useState(true);
+
+
+    useEffect(() => {
+        if (isLoading) {
+            axios.get(import.meta.env.VITE_BACKEND_URL + "/api/products")
+                .then((res) => {
+                    setProducts(res.data);
+                    setisLoading(false);
+                });
+
+
+        }
+    }, [isLoading]);
+
+    const navigate = useNavigate();
 
     return (
         <div className="w-full h-full border-[3px]">
-            <table>
+
+
+            {isLoading ? <Loader/> : <table>
                 <thead>
 
                     <tr>
@@ -117,7 +61,7 @@ export default function ProductsAdminPage() {
                                         <td className="p-2.5">{product.labelledPrice}</td>
                                         <td className="p-2.5">{product.category}</td>
                                         <td className="p-2.5">{product.stock}</td>
-                                        <td className="p-2.5">
+                                        <td className="p-2.5 flex justify-center items-center" >
                                             <BiTrash className="bg-red-500 p-[7px] text-3xl rounded-full text-white shadow-2xl shadow-black cursor-pointer" onClick={
                                                 () => {
                                                     const token = localStorage.getItem("token");
@@ -136,7 +80,7 @@ export default function ProductsAdminPage() {
                                                             console.log("Product deleted successfully");
                                                             console.log(res.data);
                                                             toast.success("Product deleted successfully");
-                                                            setA(a + 1);
+                                                            setisLoading(!isLoading);
                                                         }
                                                     ).catch(
                                                         (error) => {
@@ -146,14 +90,23 @@ export default function ProductsAdminPage() {
                                                     )
                                                 }
                                             } />
+                                            <BiEdit onClick={
+                                                () => {
+                                                    navigate("/admin/updateProduct",
+                                                        {
+                                                            state: product,
+                                                        }
+                                                    );
+                                                }
+                                            } className="bg-blue-500 p-[7px] text-3xl rounded-full text-white shadow-2xl shadow-black cursor-pointer ml-2.5" />
                                         </td>
                                     </tr>
                                 )
                             }
                         )
-                    }
+                    } 
                 </tbody>
-            </table>
+            </table>}
             <Link
                 to={"/admin/newProduct"}
                 className="fixed right-[60px] bottom-[60px] p-5 text-white bg-black rounded-full shadow-2xl"

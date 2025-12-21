@@ -31,6 +31,11 @@ export default function ClientWebPage() {
 						path="/contact-us"
 						element={<h1 className="text-3xl text-center">Contact Us Page</h1>}
 					/>
+					<Route
+					    path="/cart"
+						// element={}
+				
+					/>
                     <Route
                         path="/overview/:productId"
                         element={<ProductOverViewPage />}

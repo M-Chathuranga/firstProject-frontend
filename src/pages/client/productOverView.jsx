@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../../components/loader";
 import ImageSlider from "../../components/imageSlider";
-// import { addToCart, getCart } from "../../utils/cart";
+import { addToCart, getCart } from "../../utils/cart";
 import toast from "react-hot-toast";
 
 export default function ProductOverViewPage(){

@@ -95,6 +95,7 @@ export default function Header() {
 				<Link to="/cart" className="absolute right-[250px] ">
 					<BiCart className="text-white text-3xl ml-4" />
 				</Link>
+				
 				{
 					token!=null&&<button className="absolute right-[80px] text-white text-xl ml-4" onClick={
 						()=>{
@@ -106,6 +107,7 @@ export default function Header() {
 
 					</button>
 				}
+				
 			</div>
 		</header>
 	);

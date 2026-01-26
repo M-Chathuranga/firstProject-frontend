@@ -14,9 +14,9 @@ export default function Header() {
 				<div className="fixed z-[100] top-0 right-0 w-[100vw] h-[100vh] bg-[#00000050]">
 					<div className="h-full w-[350px] bg-white flex flex-col">
 						<div className="w-full bg-accent h-[100px] flex pl-[45px] flex-row items-center gap-[20px]">
-							<GiHamburgerMenu className="text-white text-4xl  md:hidden " onClick={()=>{
-                                setIsOpen(close);
-                            }}/>
+							<GiHamburgerMenu className="text-white text-4xl  md:hidden " onClick={() => {
+								setIsOpen(close);
+							}} />
 							<img
 								className="w-[150px] h-[80px] object-cover  cursor-pointer"
 								onClick={() => {
@@ -37,8 +37,8 @@ export default function Header() {
 								<HiHome className="text-accent text-2xl mr-2" />
 								Home
 							</button>
-                            {/* products */}
-                            <button
+							{/* products */}
+							<button
 								className="text-accent text-2xl flex flex-row items-center"
 								onClick={() => {
 									setIsOpen(false);
@@ -48,8 +48,8 @@ export default function Header() {
 								<BiStore className="text-accent text-2xl mr-2" />
 								Products
 							</button>
-                            {/* cart */}
-                            <button
+							{/* cart */}
+							<button
 								className="text-accent text-2xl flex flex-row items-center"
 								onClick={() => {
 									setIsOpen(false);
@@ -72,10 +72,10 @@ export default function Header() {
 				alt="Logo"
 			/>
 			<GiHamburgerMenu className="text-white text-4xl absolute md:hidden left-[40px]" onClick={
-                ()=>{
-                    setIsOpen(true);
-                }
-            }/>
+				() => {
+					setIsOpen(true);
+				}
+			} />
 			<div className="hidden w-full md:flex justify-center items-center">
 				<Link to="/" className="text-white text-xl ">
 					Home
@@ -95,19 +95,30 @@ export default function Header() {
 				<Link to="/cart" className="absolute right-[250px] ">
 					<BiCart className="text-white text-3xl ml-4" />
 				</Link>
-				
-				{
-					token!=null&&<button className="absolute right-[80px] text-white text-xl ml-4" onClick={
-						()=>{
+
+				{token ? (
+					// 🟢 If token exists (User is logged in) -> Show LOGOUT
+					<button
+						className="absolute right-[80px] text-white text-xl ml-4"
+						onClick={() => {
 							localStorage.removeItem("token");
 							navigate("/login");
-						}
-					}>
+						}}
+					>
 						Logout
-
 					</button>
-				}
-				
+				) : (
+					// 🔴 If token is null (User is logged out) -> Show LOGIN
+					<button
+						className="absolute right-[80px] text-white text-xl ml-4"
+						onClick={() => {
+							navigate("/login");
+						}}
+					>
+						Login
+					</button>
+				)}
+
 			</div>
 		</header>
 	);

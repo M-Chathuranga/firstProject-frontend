@@ -16,5 +16,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "src/app/index.j"  ]
+, "src/app/index.j", "src/components/app-tabs.js"  ]
 }

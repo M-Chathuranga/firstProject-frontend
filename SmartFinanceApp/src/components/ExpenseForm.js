@@ -1,197 +1,185 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+} from "react-native";
 
-export default function ExpenseForm() {
-  const [amount, setAmount] = useState('');
-  const [date, setDate] = useState('');
-  const [note, setNote] = useState('');
-  
-  // Categories state (Food, Transport, Academic, and dynamically added ones)
-  const [categories, setCategories] = useState(['Food', 'Transport', 'Academic']);
-  const [selectedCategory, setSelectedCategory] = useState('Food');
-  const [newCategory, setNewCategory] = useState('');
+export default function ExpenseForm({ onAddExpense, categories }) {
+  const [amount, setAmount] = useState("0");
+  const [selectedCategory, setSelectedCategory] = useState("Food");
+  const [note, setNote] = useState("");
 
-  // Function to add a new category
-  const handleAddCategory = () => {
-    if (newCategory.trim() !== '' && !categories.includes(newCategory)) {
-      setCategories([...categories, newCategory.trim()]);
-      setSelectedCategory(newCategory.trim());
-      setNewCategory('');
+  const handlePress = (value) => {
+    if (value === "AC") {
+      setAmount("0");
+    } else if (value === "DEL") {
+      setAmount(amount.length > 1 ? amount.slice(0, -1) : "0");
+    } else {
+      setAmount(amount === "0" ? value : amount + value);
     }
-  };
-
-  // Function to handle expense submission
-  const handleSubmit = () => {
-    console.log({
-      amount,
-      date,
-      note,
-      category: selectedCategory,
-    });
-    alert('Expense Added Successfully!');
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Expense Entry & Categories</Text>
-      
-      {/* --- 1. Category Management Section --- */}
-      <Text style={styles.label}>Select Category</Text>
-      <View style={styles.categoryContainer}>
-        {categories.map((cat, index) => (
+      <View style={styles.amountBox}>
+        <Text style={styles.amountText}>Rs {amount}</Text>
+      </View>
+
+      <View style={styles.keypad}>
+        {[
+          "AC",
+          "DEL",
+          "%",
+          "÷",
+          "7",
+          "8",
+          "9",
+          "×",
+          "4",
+          "5",
+          "6",
+          "-",
+          "1",
+          "2",
+          "3",
+          "+",
+          "0",
+          ".",
+          "=",
+        ].map((item, index) => (
           <TouchableOpacity
             key={index}
             style={[
-              styles.categoryChip,
-              selectedCategory === cat && styles.selectedCategoryChip,
+              styles.key,
+              (item === "=" || item === "AC") && styles.specialKey,
             ]}
-            onPress={() => setSelectedCategory(cat)}
+            onPress={() => handlePress(item)}
           >
-            <Text
-              style={[
-                styles.categoryText,
-                selectedCategory === cat && styles.selectedCategoryText,
-              ]}
-            >
-              {cat}
-            </Text>
+            <Text style={styles.keyText}>{item}</Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      {/* Add New Category Row */}
-      <View style={styles.addCategoryRow}>
-        <TextInput
-          style={[styles.input, { flex: 1, marginBottom: 0 }]}
-          placeholder="New Category Name"
-          placeholderTextColor="#888"
-          value={newCategory}
-          onChangeText={setNewCategory}
-        />
-        <TouchableOpacity style={styles.addCategoryButton} onPress={handleAddCategory}>
-          <Text style={styles.addCategoryButtonText}>Add</Text>
-        </TouchableOpacity>
+      <Text style={styles.label}>CATEGORY</Text>
+      <View style={styles.categoryRow}>
+        {categories &&
+          categories.map((cat) => (
+            <TouchableOpacity
+              key={cat.id}
+              style={[
+                styles.chip,
+                selectedCategory === cat.name && styles.selectedChip,
+              ]}
+              onPress={() => setSelectedCategory(cat.name)}
+            >
+              <Text
+                style={[
+                  styles.chipText,
+                  selectedCategory === cat.name && styles.selectedChipText,
+                ]}
+              >
+                {cat.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
       </View>
 
-      {/* --- 2. Expense Adding Form Section --- */}
-      <Text style={[styles.label, { marginTop: 20 }]}>Expense Details</Text>
-      
+      <Text style={styles.label}>NOTE (OPTIONAL)</Text>
       <TextInput
         style={styles.input}
-        placeholder="Amount (Rs.)"
-        placeholderTextColor="#888"
-        keyboardType="numeric"
-        value={amount}
-        onChangeText={setAmount}
-      />
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Date (YYYY-MM-DD)"
-        placeholderTextColor="#888"
-        value={date}
-        onChangeText={setDate}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Note (Optional)"
-        placeholderTextColor="#888"
+        placeholder="Add a note..."
         value={note}
         onChangeText={setNote}
+        placeholderTextColor="#aaa"
       />
-      
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Save Expense</Text>
+
+      <TouchableOpacity
+        style={styles.saveBtn}
+        onPress={() => {
+          onAddExpense(amount, note, selectedCategory);
+          setAmount("0");
+          setNote("");
+        }}
+      >
+        <Text style={styles.saveBtnText}>Save Expense</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  container: { padding: 16, backgroundColor: "#f8fafc", flexGrow: 1 },
+  amountBox: {
+    backgroundColor: "#fff",
     padding: 20,
-    backgroundColor: '#fff',
-    flexGrow: 1,
+    borderRadius: 12,
+    alignItems: "center",
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
   },
-  heading: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#333',
-    textAlign: 'center',
+  amountText: { fontSize: 28, fontWeight: "bold", color: "#1e293b" },
+  keypad: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: 16,
   },
+  key: {
+    width: "23%",
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+  },
+  specialKey: { backgroundColor: "#f1f5f9" },
+  keyText: { fontSize: 18, fontWeight: "600", color: "#334155" },
   label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#444',
-  },
-  categoryContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 10,
-  },
-  categoryChip: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    marginRight: 8,
-    marginBottom: 8,
-    backgroundColor: '#f9f9f9',
-  },
-  selectedCategoryChip: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
-  },
-  categoryText: {
-    color: '#333',
-    fontSize: 14,
-  },
-  selectedCategoryText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  addCategoryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  addCategoryButton: {
-    backgroundColor: '#34C759',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginLeft: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addCategoryButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-  },
-  submitButton: {
-    backgroundColor: '#007AFF',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
+    fontSize: 11,
+    fontWeight: "bold",
+    color: "#64748b",
+    marginBottom: 6,
     marginTop: 10,
   },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+  categoryRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 10,
   },
+  chip: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#cbd5e1",
+  },
+  selectedChip: { backgroundColor: "#4f46e5", borderColor: "#4f46e5" },
+  chipText: { fontSize: 13, color: "#334155", fontWeight: "600" },
+  selectedChipText: { color: "#fff" },
+  input: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#cbd5e1",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
+    marginBottom: 16,
+    color: "#1e293b",
+  },
+  saveBtn: {
+    backgroundColor: "#10b981",
+    padding: 14,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  saveBtnText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
 });
